@@ -12,6 +12,19 @@
 
     <bean id="eventLogger" class="com.epam.spring.core.loggers.ConsoleEventLogger"/>
 
+    <bean id="event" class="com.epam.spring.core.beans.Event" scope="prototype">
+
+        <constructor-arg>
+            <bean class="java.util.Date"/>
+        </constructor-arg>
+
+        <constructor-arg>
+            <bean id="dateFormat" class="java.text.DateFormat" factory-method="getDateTimeInstance"/>
+        </constructor-arg>
+
+        <property name="message" value="Some event for user 1"/>
+    </bean>
+
     <bean id="app" class="com.epam.spring.core.App">
         <constructor-arg ref="client"/>
         <constructor-arg ref="eventLogger"/>

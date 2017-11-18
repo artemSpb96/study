@@ -1,6 +1,7 @@
 package com.epam.spring.core;
 
 import com.epam.spring.core.beans.Client;
+import com.epam.spring.core.beans.Event;
 import com.epam.spring.core.loggers.ConsoleEventLogger;
 import com.epam.spring.core.loggers.EventLogger;
 import org.springframework.context.ApplicationContext;
@@ -21,11 +22,12 @@ public class App {
 
         App app = (App)context.getBean("app");
 
-        app.logEvent("Some event for user 1");
+        app.logEvent((Event) context.getBean("event"));
     }
 
-    private void logEvent(String msg) {
-        String message = msg.replaceAll(client.getId(), client.getFullName());
-        eventLogger.logEvent(message);
+    private void logEvent(Event event) {
+        String message = event.getMessage();
+        event.setMessage(message.replaceAll(client.getId(), client.getFullName()));
+        eventLogger.logEvent(event);
     }
 }
