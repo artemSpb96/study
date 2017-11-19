@@ -2,20 +2,22 @@ package com.epam.spring.core;
 
 import com.epam.spring.core.beans.Client;
 import com.epam.spring.core.beans.Event;
-import com.epam.spring.core.loggers.ConsoleEventLogger;
 import com.epam.spring.core.loggers.EventLogger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.Map;
 
 public class App {
 
     private Client client;
-    private EventLogger eventLogger;
+    private EventLogger defaultLogger;
+    private Map<EventType, EventLogger> loggerByType;
 
-    public App(Client client, EventLogger eventLogger) {
+    public App(Client client, EventLogger defaultLogger, Map<EventType, EventLogger> loggerByType) {
         this.client = client;
-        this.eventLogger = eventLogger;
+        this.defaultLogger = defaultLogger;
+        this.loggerByType = loggerByType;
     }
 
     public static void main(String[] args) {
@@ -23,14 +25,20 @@ public class App {
 
         App app = (App)context.getBean("app");
 
-        app.logEvent((Event) context.getBean("event"));
+        app.logEvent((Event) context.getBean("event"), EventType.ERROR);
 
         context.close();
     }
 
-    private void logEvent(Event event) {
+    private void logEvent(Event event, EventType eventType) {
         String message = event.getMessage();
         event.setMessage(message.replaceAll(client.getId(), client.getFullName()));
-        eventLogger.logEvent(event);
+
+        EventLogger logger = loggerByType.get(eventType);
+        if (logger == null) {
+            logger = defaultLogger;
+        }
+
+        logger.logEvent(event);
     }
 }

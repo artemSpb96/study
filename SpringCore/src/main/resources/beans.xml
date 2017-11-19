@@ -5,21 +5,13 @@
  		http://www.springframework.org/schema/beans
  		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
+    <import resource="loggers.xml"/>
+
     <bean id="client" class="com.epam.spring.core.beans.Client">
         <property name="id" value="1"/>
         <property name="fullName" value="John Smith"/>
     </bean>
 
-    <bean id="eventLogger" class="com.epam.spring.core.loggers.ConsoleEventLogger"/>
-
-    <bean id="fileEventLogger" class="com.epam.spring.core.loggers.FileEventLogger" init-method="init">
-        <constructor-arg value="log.txt"/>
-    </bean>
-
-    <bean id="cacheFileEventLogger" class="com.epam.spring.core.loggers.CacheFileEventLogger"
-          destroy-method="destroy" parent="fileEventLogger">
-        <constructor-arg value="10"/>
-    </bean>
 
     <bean id="event" class="com.epam.spring.core.beans.Event" scope="prototype">
 
@@ -37,6 +29,12 @@
     <bean id="app" class="com.epam.spring.core.App">
         <constructor-arg ref="client"/>
         <constructor-arg ref="cacheFileEventLogger"/>
+        <constructor-arg>
+            <map>
+                <entry key="INFO" value-ref="consoleEventLogger"/>
+                <entry key="ERROR" value-ref="combinedEventLogger"/>
+            </map>
+        </constructor-arg>
     </bean>
 
 </beans>
